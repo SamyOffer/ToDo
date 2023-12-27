@@ -5,7 +5,7 @@ import { Footer } from 'flowbite-react';
 
 function App() {
   const [notes, setNotes] = useState([]); // use to display all the notes 
-  const { register, handleSubmit, reset, setValue } = useForm(); // use for the form to add a note
+  const { register, handleSubmit, reset } = useForm(); // use for the form to add a note
   const [editingNoteId, setEditingNoteId] = useState(null); // pour editer une note
 
   useEffect(() => {
@@ -55,7 +55,6 @@ function App() {
                 note._id === id ? updatedNote : note
             )
         );
-
         console.log(updatedNote);
     } catch (error) {
         console.error('Error marking note as read:', error);
@@ -76,21 +75,15 @@ function App() {
   
         const updatedNote = await response.json();
   
-        // Mettez à jour la note dans la liste locale
         setNotes((prevNotes) =>
-          prevNotes.map((note) =>
-            note._id === editingNoteId ? updatedNote : note
-          )
-        );
-        // Réinitialisez le formulaire
-        reset();
+        prevNotes.map((note) =>
+          note._id === editingNoteId ? updatedNote : note
+        ));
+
         // Réinitialisez l'état d'édition
         setEditingNoteId(null);
-     
-         // Utilisez setValue pour définir manuellement les valeurs des champs
-         setValue('title', '');
-         setValue('content', '');
-         setValue('_id','');
+        // Réinitialisez le formulaire
+        window.location.reload();
       } else {
         // Sinon, nous ajoutons une nouvelle note
         const response = await fetch("/addNote", {
@@ -105,12 +98,8 @@ function App() {
   
         // Ajoutez la nouvelle note à la liste locale
         setNotes((prevNotes) => [...prevNotes, newNote]);
-
         // Réinitialisez le formulaire
-        reset();
-  
       }
-      // Réinitialisez le formulaire
       reset();
     } catch (error) {
       console.error('Error adding/updating note:', error);
@@ -122,7 +111,7 @@ function App() {
   const editNote = (id) => {
     // Remplissez le formulaire avec les données de la note à éditer
     const noteToEdit = notes.find((note) => note._id === id);
-    setEditingNoteId(id);
+    setEditingNoteId(noteToEdit._id);
     reset(noteToEdit);
   };
 
